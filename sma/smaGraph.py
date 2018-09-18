@@ -30,7 +30,7 @@ merge=merge.dropna()
 
 #not sure if this line even changes anything
 plt.style.use('ggplot')
-merge[['close','sma_close']].plot()
+merge[['close','sma_close']].plot(title="nvidia")
 
 #if you don't include this line, graph will pop up and exit immediately
 plt.show(block=True)
