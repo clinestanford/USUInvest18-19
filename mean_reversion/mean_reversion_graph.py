@@ -2,7 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 
 
-df = pd.read_csv("Spy.csv")
+file = "ARE.csv"
+
+over = 1.02
+under = .98
+
+df = pd.read_csv(file)
 df = df.set_index("date")
 df = df[["close", "volume"]]
 df = df.reindex(index=df.index[::-1])
@@ -36,14 +41,14 @@ thirty = thirty.dropna()
 fifty = fifty.dropna()
 ten = ten.dropna()
 
-thirty["over"] = thirty["30_close"]*1.03
-thirty["under"] = thirty["30_close"]*.97
+thirty["over"] = thirty["30_close"]*over
+thirty["under"] = thirty["30_close"]*under
 
-fifty["over"] = fifty["50_close"]*1.03
-fifty["under"] = fifty["50_close"]*.97
+fifty["over"] = fifty["50_close"]*over
+fifty["under"] = fifty["50_close"]*under
 
-ten["over"] = ten["100_close"]*1.03
-ten["under"] = ten["100_close"]*.97
+ten["over"] = ten["10_close"]*over
+ten["under"] = ten["10_close"]*under
 
 thirty.plot(title="thirty day window")
 fifty.plot(title="fifty day window")
