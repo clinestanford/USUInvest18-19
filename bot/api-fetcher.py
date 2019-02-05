@@ -21,7 +21,7 @@ for coin in json['data']:
 	quote = coin['quote']['USD']
 	# get data to datetime
 	# dt = datetime.strptime("21/11/08 16:30", "%d/%m/%y %H:%M")
-	rec = record(date   = time.strftime("%d/%m/%y %H:%M"),  
+	rec = record(date   = time.strftime("%Y-%m-%d %H:%M"),  
 				 name   = coin['name'],
 				 symbol = coin['symbol'],
 				 rank   = coin['cmc_rank'],
