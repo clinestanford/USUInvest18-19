@@ -40,22 +40,22 @@ class StockData:
         #print(stockData['SPY']['chart'][-1])
 
         for stock in stockData:
-        	try:
-        		df = StockData.pd.read_pickle("StockData/" + stock + ".pkl")
-        	except IOError:
-        		df = StockData.pd.DataFrame(columns=columns)
+            try:
+                df = StockData.pd.read_pickle("StockData/" + stock + ".pkl")
+            except IOError:
+                df = StockData.pd.DataFrame(columns=columns)
 
             #If we don't have a pickle, get the 5 year data
-        	if (not StockData.os.path.exists("StockData/" + stock + ".pkl")):
-        		for candle in stockData[stock]['chart']:
-        			df = StockData.CandleToDataFrame(df,stock,candle)
-        	else:#We have a pickle, lets just append yesterday's data.
-        		candle = stockData[stock]['chart'][-1]
-        		df = StockData.CandleToDataFrame(df, stock, candle)
+            if (not StockData.os.path.exists("StockData/" + stock + ".pkl")):
+                for candle in stockData[stock]['chart']:
+                    df = StockData.CandleToDataFrame(df,stock,candle)
+            else:#We have a pickle, lets just append yesterday's data.
+                candle = stockData[stock]['chart'][-1]
+                df = StockData.CandleToDataFrame(df, stock, candle)
 
-        	print(df.head())
-        	print(df.tail())
-        	df.to_pickle("StockData/" + stock + ".pkl")
+            print(df.head())
+            print(df.tail())
+            df.to_pickle("StockData/" + stock + ".pkl")
 
     #Reads Saved Pickle and returns dataframe.
     def Get(symbol):
