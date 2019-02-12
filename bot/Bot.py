@@ -3,8 +3,8 @@
 from Alpaca import Alpaca
 
 #Define API credentials, Enter your keys here
-keyID = ''
-secretKey = ''
+keyID = 'PKSRSFKPE467RCMPKRAQ'
+secretKey = 'husqyWiH6aawS34SCYEHm0FT8eqgwTQs6utgZUQn'
 
 #Instantiate an Alpaca object to access the API
 alpaca = Alpaca(keyID, secretKey)
@@ -93,7 +93,7 @@ def ShowMenu():
         if (len(openPositions) == 0):
             print('No Open Positions.')
             exit()
-        for position in openPositions:
+        for order in openPositions:
             print('\r\nSymbol: ', order['symbol'])
             print('Quantity: ', order['qty'])
             print('Side: ', order['side'])
