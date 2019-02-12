@@ -1,4 +1,9 @@
 #Class to handle the previous days data
+
+
+import sys
+
+
 class StockData:
     import requests
     import pandas as pd
@@ -6,7 +11,6 @@ class StockData:
     from datetime import datetime
     from chart import chart
     import os.path
-
     #Returns 5year data from a batch of symbols.
     def GetBatch(symbols = "SPY,APPL,F,GE,FB"):
         yesterdayData = StockData.requests.get('https://api.iextrading.com/1.0/stock/market/batch?symbols='+symbols+'&types=chart&range=5y').json()
@@ -64,3 +68,10 @@ class StockData:
         else:
             print('File Not Found')
             exit()
+
+def main():
+    StockData.Download()
+
+
+if __name__ == '__main__':
+    main()
