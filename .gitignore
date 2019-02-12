@@ -3,6 +3,7 @@ __pycache__
 *.pyc
 bot/stocks
 bot/logs
+bot/cryptoData
 
 .idea
 StockData
