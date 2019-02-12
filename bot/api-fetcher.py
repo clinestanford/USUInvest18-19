@@ -33,7 +33,7 @@ for coin in json['data']:
 				 cap    = quote['market_cap'])
 
 	try:
-		df = pd.read_pickle("data/" + rec.get_symbol() + ".pkl")
+		df = pd.read_pickle("cryptoData/" + rec.get_symbol() + ".pkl")
 	except FileNotFoundError:
 		df = pd.DataFrame(columns=columns)
 		
@@ -49,7 +49,7 @@ for coin in json['data']:
 			   'cap': rec.get_cap()},
 				ignore_index=True)
 	# print(df.head())
-	df.to_pickle('data/'+coin['symbol']+'.pkl')
+	df.to_pickle('cryptoData/'+coin['symbol']+'.pkl')
 
 
 
