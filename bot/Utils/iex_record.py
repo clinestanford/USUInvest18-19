@@ -1,4 +1,7 @@
-class chart(object):
+
+
+
+class iex_record(object):
 
 	def __init__(self,date,symbol,start,high,low,close,volume,change,changePercent,vwap):
 		self.date = date
@@ -33,3 +36,6 @@ class chart(object):
 		return self.changePercent
 	def get_vwap(self):
 		return self.vwap
+
+	def __str__(self):
+		return str(self.date) + " close: " + str(self.close)
