@@ -19,10 +19,10 @@ class Pairs:
             z = self.getZScore(ratios)
 
             if z < -1:
-                #buy
+                #buy s1, sell s2
 
             elif z > 1:
-                #sell
+                #buy s2, sell s1
 
     def getZScore(self, ratios):
         zScore = (ratios[-1] - ratios.mean()) / np.std(ratios)
