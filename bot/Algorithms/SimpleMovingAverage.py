@@ -2,7 +2,6 @@ import pandas as pd
 from ..Utils.StockData import StockData
 from ..Utils.Order import Order
 
-
 # Methods:
 #	trade - trade on simple MACD signals
 #
@@ -35,10 +34,12 @@ class SimpleMACD(object):
 
 			if longTermMVA < shortTermMVA:
 				#buy
-				order = Order(stock, quantity, 'buy', 'market', 'day')
+				order = Order(stock, self.quantity, 'buy', 'market', 'day')
+				orders.append(order)
 
 			elif longTermMVA > shortTermMVA:
 				#sell
-				order = Order(stock, quantity, 'sell', 'market', 'day')
+				order = Order(stock, self.quantity, 'sell', 'market', 'day')
+				orders.append(order)
 
 		return orders
