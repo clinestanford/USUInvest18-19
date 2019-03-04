@@ -8,6 +8,12 @@ from iex_record import iex_record
 from datetime import datetime
 import os.path
 from Config import PATH_CONFIG
+from os import getcwd as cwd 
+from pathlib2 import Path
+
+
+## TODO: add relative path to be working here
+
 
 
 class StockData:
@@ -21,7 +27,7 @@ class StockData:
 			'XLNX,XYL,YUM,ZBH,ZION,ZTS&']
 	
 	# Returns 5year data from a batch of symbols.
-	def GetBatch(self, symbols = "SPY,APPL,F,GE,FB", windwow="3m"):
+	def GetBatch(self, symbols = "SPY,APPL,F,GE,FB", window="3m"):
 		#window = 5y, 3m, 1q
 		yesterdayData = requests.get('https://api.iextrading.com/1.0/stock/market/batch?symbols='+symbols+'&types=chart&range='+window).json()
 		if not yesterdayData:
@@ -104,23 +110,26 @@ class StockData:
 
 	#download the last 'window' of data for all in S&P 500
 	def Download(self):
+
+		path = Path(cwd()) / (Path(__file__).parent)
+
+
 		columns = ['date', 'symbol', 'open', 'high', 'low', 'close', 'volume', 'change', 'changePercent', 'vwap']
 		for batch in self.batches:
 			json = self.GetBatch(batch, window="3m")
 			for stock in json:
 				print(stock)
 
-
-
 				try:
-					df = pd.read_pickle(PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
+					print(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
+					df = pd.read_pickle(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
 				except IOError:
 					df = pd.DataFrame(columns = columns)
 
 				for day in json[stock]['chart']:
 					df = self.map_to_df(df, stock, day)
 
-				df.to_pickle(PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
+				df.to_pickle(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
 
 
 	#Reads Saved Pickle and returns dataframe.

@@ -1,9 +1,13 @@
 
-
 import requests as r
 import pandas as pd
-from record import record
+from crypto_record import record
 from datetime import datetime
+from Config import PATH_CONFIG
+from os import getcwd as cwd
+import os
+import pathlib
+from pathlib import Path
 
 headers = {"X-CMC_PRO_API_KEY": '80bf0944-68cf-48da-a665-92218a6ae1eb'}
 
@@ -33,7 +37,9 @@ for coin in json['data']:
 				 cap    = quote['market_cap'])
 
 	try:
-		df = pd.read_pickle("cryptoData/" + rec.get_symbol() + ".pkl")
+		path = Path(cwd()) / (Path(__file__).parent)
+
+		df = pd.read_pickle(path / PATH_CONFIG["CryptoDataPath"] / (rec.get_symbol() + ".pkl"))
 	except FileNotFoundError:
 		df = pd.DataFrame(columns=columns)
 		
@@ -48,8 +54,8 @@ for coin in json['data']:
 			   'ch7d': rec.get_ch7d(),
 			   'cap': rec.get_cap()},
 				ignore_index=True)
-	# print(df.head())
-	df.to_pickle('cryptoData/'+coin['symbol']+'.pkl')
+
+	df.to_pickle(path / PATH_CONFIG["CryptoDataPath"] / (rec.get_symbol() + ".pkl"))
 
 
 
