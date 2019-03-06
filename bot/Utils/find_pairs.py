@@ -55,10 +55,10 @@ def ranged_price_list(file: str, days: int=120, type: str='close'):
 
 
 # warning this function will take around 40 - 60 minutes to complete if comparing ~500 securities
-def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=.01, type: str='close'):
+def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=.05, type: str='close'):
 	data_dir = Path.joinpath(Path.cwd(), data_dir)
 	data_file_names = ticker_list(data_dir)
-	data_file_names = data_file_names[:50]  # to not test 124000 possibilities in ~500 stock list
+	data_file_names = data_file_names[:20]  # to not test 124000 possibilities in ~500 stock list
 	cointegrated = []
 
 	for i in range(len(data_file_names)):
@@ -68,11 +68,13 @@ def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=
 
 			# correlation test
 			if corr_value < pearson_coor(data_list_1, data_list_2):
-				coint_value = coint(data_list_1, data_list_2)
+				coint_value = coint(data_list_1, data_list_2)[1]
 
 				# cointegrated test
 				if coint_value < p_value:
 					cointegrated.append(
-						(coint_value, data_file_names[i].split('\\')[-1], data_file_names[j].split('\\')[-1]))
+						(coint_value, data_file_names[i].name, data_file_names[j].name))
 
 	return cointegrated
+
+print(find_all_pairs(30))
