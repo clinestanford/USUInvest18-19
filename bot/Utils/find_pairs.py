@@ -50,21 +50,24 @@ def ranged_price_list(file: str, days: int=120, type: str='close'):
 
 
 # warning this function will take around 40 - 60 minutes to complete if comparing ~500 securities
-def find_all_pairs(days: int, data_dir: str='StockData'):
+def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=.01):
 	data_dir = Path.joinpath(Path.cwd(), data_dir)
 	data_file_names = ticker_list(data_dir)
 	# symbols = symbols[:10] # testing not 124000 possibilities
-	correlated = []
 	cointegrated = []
+
 	for i in range(len(data_file_names)):
 		for j in range(i + 1, len(data_file_names)):
-			if .90 < pearson_coor(ranged_price_list(data_file_names[i], 120, 'close'), ranged_price_list(data_file_names[j], 120, 'close')):
-				correlated.append([data_file_names[i], data_file_names[j]])
+			data_list_1 = ranged_price_list(data_file_names[i], 120, 'close')
+			data_list_2 = ranged_price_list(data_file_names[j], 120, 'close')
 
-	for i in range(len(correlated)):
-		pvalue = coint(ranged_price_list(correlated[i][0], 120, 'close'), ranged_price_list(correlated[i][1], 120, 'close'))
+			# correlation test
+			if corr_value < pearson_coor(data_list_1, data_list_2):
+				coint_value = coint(data_list_1, data_list_2)
 
-		if pvalue < .01:
-			cointegrated.append([pvalue, correlated[i][0].split('\\')[-1], correlated[i][1]].split('\\')[-1])
+				# cointegration test
+				if coint_value < p_value:
+					cointegrated.append(
+						(coint_value, data_file_names[i].split('\\')[-1], data_file_names[j].split('\\')[j]))
 
 	return cointegrated
