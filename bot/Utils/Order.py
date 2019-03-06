@@ -1,4 +1,4 @@
-#An Order Model used by the Alpaca API class
+# An Order Model used by the Alpaca API class
 class Order:
     def __init__(self, symbol, quantity, side, type, timeInForce, limitPrice = None, stopPrice = None):
         self.symbol = symbol #Symbol or Asset ID being traded
