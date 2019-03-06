@@ -1,11 +1,7 @@
-
-# input is two tickers. Output is correlation factor between -1 and 1
-# makes the two list the same length for the correlation calculation between -1 and 1
-# if one is longer, it will cut off the oldest data of the longer set
-
 from statsmodels.tsa.stattools import coint
 import math
 from pathlib2 import Path
+import pandas as pd
 
 
 def pearson_coor(data1: list, data2: list) -> float:  # find the correlation of 2 list of even length
@@ -44,30 +40,39 @@ def ticker_list(data_dir) -> list:
 
 
 def ranged_price_list(file: str, days: int=120, type: str='close'):
-	# open data and save last n days in list. Its saved as a pandas data frame that i don't yet know how to use
 	data = []
-	return data
+	df = pd.read_pickle(file)
+	for index, row in df.iterrows():
+		data.append(row[type])
+
+	if df.iloc[3,0] > df.iloc[2,0]:
+		# df.tail is the newest data
+		return data[-days:]
+	else:
+		# df.head is the newest data
+		return data[:days]
+	# TODO turn these list into numpy arrays for better preformance?
 
 
 # warning this function will take around 40 - 60 minutes to complete if comparing ~500 securities
-def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=.01):
+def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=.01, type: str='close'):
 	data_dir = Path.joinpath(Path.cwd(), data_dir)
 	data_file_names = ticker_list(data_dir)
-	# symbols = symbols[:10] # testing not 124000 possibilities
+	data_file_names = data_file_names[:50]  # to not test 124000 possibilities in ~500 stock list
 	cointegrated = []
 
 	for i in range(len(data_file_names)):
 		for j in range(i + 1, len(data_file_names)):
-			data_list_1 = ranged_price_list(data_file_names[i], 120, 'close')
-			data_list_2 = ranged_price_list(data_file_names[j], 120, 'close')
+			data_list_1 = ranged_price_list(data_file_names[i], days, type)
+			data_list_2 = ranged_price_list(data_file_names[j], days, type)
 
 			# correlation test
 			if corr_value < pearson_coor(data_list_1, data_list_2):
 				coint_value = coint(data_list_1, data_list_2)
 
-				# cointegration test
+				# cointegrated test
 				if coint_value < p_value:
 					cointegrated.append(
-						(coint_value, data_file_names[i].split('\\')[-1], data_file_names[j].split('\\')[j]))
+						(coint_value, data_file_names[i].split('\\')[-1], data_file_names[j].split('\\')[-1]))
 
 	return cointegrated
