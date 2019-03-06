@@ -39,23 +39,23 @@ def ticker_list(data_dir) -> list:
 	return data_file_names
 
 
-def ranged_price_list(file: str, days: int=120, type: str='close'):
+def ranged_price_list(file: str, days: int=120, candle_type: str='close'):
 	data = []
 	df = pd.read_pickle(file)
 	for index, row in df.iterrows():
-		data.append(row[type])
+		data.append(row[candle_type])
 
-	if df.iloc[3,0] > df.iloc[2,0]:
+	if df.iloc[3, 0] > df.iloc[2, 0]:
 		# df.tail is the newest data
 		return data[-days:]
 	else:
 		# df.head is the newest data
 		return data[:days]
-	# TODO turn these list into numpy arrays for better preformance?
+	# TODO turn these list into numpy arrays for better performance?
 
 
 # warning this function will take around 40 - 60 minutes to complete if comparing ~500 securities
-def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=.05, type: str='close'):
+def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=.05, candle_type: str='close'):
 	data_dir = Path.joinpath(Path.cwd(), data_dir)
 	data_file_names = ticker_list(data_dir)
 	data_file_names = data_file_names[:20]  # to not test 124000 possibilities in ~500 stock list
@@ -63,8 +63,8 @@ def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=
 
 	for i in range(len(data_file_names)):
 		for j in range(i + 1, len(data_file_names)):
-			data_list_1 = ranged_price_list(data_file_names[i], days, type)
-			data_list_2 = ranged_price_list(data_file_names[j], days, type)
+			data_list_1 = ranged_price_list(data_file_names[i], days, candle_type)
+			data_list_2 = ranged_price_list(data_file_names[j], days, candle_type)
 
 			# correlation test
 			if corr_value < pearson_coor(data_list_1, data_list_2):
@@ -76,5 +76,3 @@ def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=
 						(coint_value, data_file_names[i].name, data_file_names[j].name))
 
 	return cointegrated
-
-print(find_all_pairs(30))
