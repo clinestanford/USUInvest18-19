@@ -5,23 +5,25 @@ import pandas as pd
 
 
 def pearson_coor(data1: list, data2: list) -> float:  # find the correlation of 2 list of even length
-
-	x, y = data1, data2
-	assert len(x) == len(y)
-	n = len(x)
-	assert n > 0
-	avg_x = average(x)
-	avg_y = average(y)
-	diffprod = 0
-	xdiff2 = 0
-	ydiff2 = 0
-	for idx in range(n):
-		xdiff = x[idx] - avg_x
-		ydiff = y[idx] - avg_y
-		diffprod += xdiff * ydiff
-		xdiff2 += xdiff * xdiff
-		ydiff2 += ydiff * ydiff
-	return diffprod / math.sqrt(xdiff2 * ydiff2)
+	try:
+		x, y = data1, data2
+		assert len(x) == len(y)
+		n = len(x)
+		assert n > 0
+		avg_x = average(x)
+		avg_y = average(y)
+		diffprod = 0
+		xdiff2 = 0
+		ydiff2 = 0
+		for idx in range(n):
+			xdiff = x[idx] - avg_x
+			ydiff = y[idx] - avg_y
+			diffprod += xdiff * ydiff
+			xdiff2 += xdiff * xdiff
+			ydiff2 += ydiff * ydiff
+		return diffprod / math.sqrt(xdiff2 * ydiff2)
+	except AssertionError:
+		print("Data lists are different lengths. Check length of available data in StockData")
 
 
 def average(x: list) -> float:
@@ -54,11 +56,13 @@ def ranged_price_list(file: str, days: int=120, candle_type: str='close'):
 	# TODO turn these list into numpy arrays for better performance?
 
 
-# warning this function will take around 40 - 60 minutes to complete if comparing ~500 securities
+# warning this function will take around 20 - 30 minutes to complete if comparing S&P500
+# runtime = ~.01365 * C(N,2) = (.01365 * N!) / (2! (N - 2)! where N is total number of securities to test
 def find_all_pairs(days: int, data_dir: str='StockData', corr_value=.9, p_value=.05, candle_type: str='close'):
+
 	data_dir = Path.joinpath(Path.cwd(), data_dir)
 	data_file_names = ticker_list(data_dir)
-	data_file_names = data_file_names[:20]  # to not test 124000 possibilities in ~500 stock list
+	data_file_names = data_file_names[:45]  # to not test 124000 possibilities in ~500 stock list
 	cointegrated = []
 
 	for i in range(len(data_file_names)):
