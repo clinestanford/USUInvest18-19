@@ -2,7 +2,7 @@ bot/data
 __pycache__
 *.pyc
 
-bot/StockData
+bot/StockData/*
 bot/CryptoData
 bot/StockLogs
 bot/CryptoLogs
