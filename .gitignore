@@ -2,11 +2,12 @@ bot/data
 __pycache__
 *.pyc
 
-bot/StockData/*
+bot/StockData/*.pkl
 bot/CryptoData
 bot/StockLogs
 bot/CryptoLogs
 
+bot/StockData1/
+
 
 .idea
-StockData
