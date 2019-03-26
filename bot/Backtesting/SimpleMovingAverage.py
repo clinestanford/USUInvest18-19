@@ -43,7 +43,7 @@ def testSimpleMovingAverage(security, window, percentAbove, percentBelow, backTe
 	if bought == True:
 		cash = cash + float(merge[-1:].close) * num_bought
 
-	#print('start: $', start_cash, ' end: $', cash, " window: ", window, " above: ", percentAbove, " below: ", percentBelow)
+	print('start: $', start_cash, ' end: $', cash, " window: ", window, " above: ", percentAbove, " below: ", percentBelow)
 
 	return (cash / start_cash, window, percentAbove, percentBelow)
 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
 	for i in np.arange(.94, 1, .005):
 		for j in np.arange(1.06, 1, -.005):
-			for k in np.arange(5, 30, 3):
+			for k in np.arange(5, 30, 5):
 
 				temp = testSimpleMovingAverage(security, k, j, i, backTestDays, startingCash)
 				if temp[0] > highest[0]:
