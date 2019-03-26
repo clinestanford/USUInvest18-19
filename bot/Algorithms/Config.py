@@ -1,6 +1,6 @@
 
 
 ALPACA_CONFIG = {
-	'key': "YOURKEY",
-	'secretKey': "YOURSECRETKEY",
+	'key': "THis is my key",
+	'secretKey': "you shouldn't see this",
 }

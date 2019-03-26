@@ -2,6 +2,7 @@ bot/data
 __pycache__
 *.pyc
 
+bot/Algorithms/Config.py
 bot/StockData/*.pkl
 bot/CryptoData
 bot/StockLogs
