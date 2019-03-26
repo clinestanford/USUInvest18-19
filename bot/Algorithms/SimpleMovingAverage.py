@@ -6,14 +6,15 @@ from ..Utils.Order import Order
 #	trade - trade on simple MACD signals
 #
 # Params:
-#	stocks - list of ticker strings
+#	stock - ticker string
 #	shortTermWindow - window for short-term MVA
 #	longTermWindow - window for long-term MVA
 #	quantity - quantity of each stock to order
 #		ToDo: implement way to specify quantity on a by-ticker basis
-class SimpleMACD(object):
-	def __init__(self, stocks=['AAPL'], shortTermWindow=12, longTermWindow=26, quantity=1):
-		self.stocks = stocks
+class SimpleMACD(BaseAlgorithm):
+	def __init__(self, stock=['AAPL'], shortTermWindow=12, longTermWindow=26, quantity=1):
+		super(SimpleMACD, self).__init__()
+		self.stock = stock
 		self.shortTermWindow = shortTermWindow
 		self.shortTermWindow = longTermWindow
 		self.quantity = quantity
@@ -22,24 +23,21 @@ class SimpleMACD(object):
 	# Buys when short-term momentum is positive
 	# Sells when short-term momentum is negative
 	# return orders - list of order objects
-	def trade(self):
-		orders = []
+	def getOrder(self):
+		df = StockData.Get(stock)
+		shortTermMVA = df['close'][-shortTermMVA:].mean()
+		longTermMVA = df['close'][-longTermMVA:].mean()
 
-		for stock in self.stocks:
-			df = StockData.Get(stock)
-			shortTermMVA = df['close'][-shortTermMVA:].mean()
-			longTermMVA = df['close'][-longTermMVA:].mean()
+		alpaca = Alpaca(keyID, secretKey, isPaper=True)
 
-			alpaca = Alpaca(keyID, secretKey, isPaper=True)
+		if longTermMVA < shortTermMVA:
+			#buy
+			order = Order(stock, self.quantity, 'buy', 'market', 'day')
 
-			if longTermMVA < shortTermMVA:
-				#buy
-				order = Order(stock, self.quantity, 'buy', 'market', 'day')
-				orders.append(order)
+		elif longTermMVA > shortTermMVA:
+			#sell
+			order = Order(stock, self.quantity, 'sell', 'market', 'day')
 
-			elif longTermMVA > shortTermMVA:
-				#sell
-				order = Order(stock, self.quantity, 'sell', 'market', 'day')
-				orders.append(order)
+		return order
 
-		return orders
+

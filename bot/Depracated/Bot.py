@@ -1,4 +1,3 @@
-
 #Example Bot
 from Alpaca import Alpaca
 
