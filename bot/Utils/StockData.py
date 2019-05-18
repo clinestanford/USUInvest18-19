@@ -11,13 +11,10 @@ from Config import PATH_CONFIG
 from os import getcwd as cwd 
 from pathlib2 import Path
 
-
-## TODO: add relative path to be working here
-
-
-
 class StockData:
 
+	##if you want to add other tickers to simply add their ticker here. It should be able to 
+	##download any ticker data you are interested in having.
 	def __init__(self):
 		self.batches = ['MMM,ABT,ABBV,ABMD,ACN,ATVI,ADBE,AMD,AAP,AES,AET,AMG,AFL,A,APD,AKAM,ALK,ALB,ARE,ALXN,ALGN,ALLE,AGN,ADS,LNT,ALL,GOOGL,GOOG,MO,AMZN,AEE,AAL,AEP,AXP,AIG,AMT,AWK,AMP,ABC,AME,AMGN,APH,APC,ADI,ANSS,ANTM,AON,AOS,APA,AIV,AAPL,AMAT,APTV,ADM,ARNC,ANET,AJG,AIZ,T,ADSK,ADP,AZO,AVB,AVY,BHGE,BLL,BAC,BK,BAX,BBT,BDX,BRK-B,BBY,BIIB,BLK,HRB,BA,BKNG,BWA,BXP,BSX,BHF,BMY,AVGO,BR,BF-B,CHRW,COG,CDNS,CPB,COF,CAH,KMX,CCL,CAT,CBOE,CBRE,CBS,CELG&',
 		 	'CNC,CNP,CTL,CERN,CF,SCHW,CHTR,CVX,CMG,CB,CHD,CI,XEC,CINF,CTAS,CSCO,C,CFG,CTXS,CLX,CME,CMS,KO,CTSH,CL,CMCSA,CMA,CAG,CXO,COP,ED,STZ,COO,CPRT,GLW,COST,COTY,CCI,CSX,CMI,CVS,DHI,DHR,DRI,DVA,DE,DAL,XRAY,DVN,DLR,DFS,DISCA,DISCK,DISH,DG,DLTR,D,DOV,DWDP,DTE,DRE,DUK,DXC,ETFC,EMN,ETN,EBAY,ECL,EIX,EW,EA,EMR,ETR,EOG,EFX,EQIX,EQR,ESS,EL,EVRG,ES,RE,EXC,EXPE,EXPD,ESRX,EXR,XOM,FFIV,FB,FAST,FRT,FDX,FIS,FITB,FE,FISV,FLT,FLIR,FLS&',
@@ -36,67 +33,23 @@ class StockData:
 		else:
 			return yesterdayData
 
-	# Appends a Candle Object to a DataFrame
-	def CandleToDataFrame(df, stock, candle):
-		temp = iex_record(candle['date'], stock, candle['open'], candle['high'], candle['low'], candle['close'], candle['volume'], candle['change'], candle['changePercent'], candle['vwap'])
-		if not (temp.get_date() in df['data'].values):
-			df = df.append({'date': temp.get_date(),
-							'symbol': stock,
-							'open': temp.get_open(),
-							'high': temp.get_high(),
-							'low': temp.get_low(),
-							'close': temp.get_close(),
-							'volume': temp.get_volume(),
-							'change': temp.get_change(),
-							'changePercent': temp.get_changePercent(),
-							'vwap': temp.get_vwap()},
-							ignore_index=True)
-		return df
-
 	def map_to_df(self, df, stock, day):
 
-		##got to make sure value is present, and if not set it to null
-		if 'date' in day.keys(): 
-			date = day['date']
-		else: 
-			date = None
-		if 'open' in day.keys(): 
-			open_val = day['open']
-		else: 
-			open_val = None
-		if 'high' in day.keys(): 
-			high = day['high']
-		else: 
-			high = None
-		if 'low' in day.keys(): 
-			low = day['low']
-		else: low = None
-		if 'close' in day.keys(): 
-			close = day['close']
-		else: 
-			close = None
-		if 'volume' in day.keys(): 
-			volume = day['volume']
-		else:
-			volume = None
-		if 'change' in day.keys(): 
-			change = day['change']
-		else: 
-			change = None
-		if 'changePercent' in day.keys(): 
-			changePercent = day['changePercent']
-		else: 
-			changePercent = None
-		if 'vwap' in day.keys(): 
-			vwap = day['vwap']
-		else: 
-			vwap = None
-
+		##got to make sure value is present, and if not set it to null, ternaries to simplify
+		date = day['date'] if 'date' in day.keys() else None
+		open_val = day['open'] if 'open' in day.keys() else None 
+		high = day['high'] if 'high' in day.keys() else None 
+		low = day['low'] if 'low' in day.keys() else None 
+		close = day['close'] if 'close' in day.keys() else None 
+		volume = day['volume'] if 'volume' in day.keys() else None 
+		change = day['change'] if 'change' in day.keys() else None 
+		changePercent = day['changePercent'] if 'changePercent' in day.keys() else None 
+		vwap = day['vwap'] if 'vwap' in day.keys() else None 
 
 		temp = iex_record(date, stock, open_val, high, low, close, volume, change, changePercent, vwap)
-		if not (date in df['date'].values) and date != None:
-			df = df.append({'date': temp.get_date(),
-							'symbol': stock,
+
+		if not (temp.get_date() in df.index) and temp.get_date() != None:
+			new_row = pd.Series({'symbol': stock,
 							'open': temp.get_open(),
 							'high': temp.get_high(),
 							'low': temp.get_low(),
@@ -104,19 +57,21 @@ class StockData:
 							'volume': temp.get_volume(),
 							'change': temp.get_change(),
 							'changePercent': temp.get_changePercent(),
-							'vwap': temp.get_vwap()},
-							ignore_index=True)
+							'vwap': temp.get_vwap()}, 
+							name=pd.to_datetime(temp.get_date()))
+
+			df = df.append(new_row)
+
 		return df
 
 	#download the last 'window' of data for all in S&P 500
-	def Download(self):
+	def Download(self, window='3m'):
 
 		path = Path(cwd()) / (Path(__file__).parent)
 
-
 		columns = ['date', 'symbol', 'open', 'high', 'low', 'close', 'volume', 'change', 'changePercent', 'vwap']
 		for batch in self.batches:
-			json = self.GetBatch(batch, window="5y")
+			json = self.GetBatch(batch, window=window)
 			for stock in json:
 				print(stock)
 
@@ -129,6 +84,8 @@ class StockData:
 				for day in json[stock]['chart']:
 					df = self.map_to_df(df, stock, day)
 
+				# df['date'] = pd.to_datetime(df['date'])
+				# df = df.set_index('date')
 				df.to_pickle(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
 
 
@@ -143,6 +100,8 @@ class StockData:
 
 def main():
 	date = StockData()
+	##if you want to download 5y of data, run
+	#date.Download(window='5y')
 	date.Download()
 
 if __name__ == '__main__':
