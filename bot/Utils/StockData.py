@@ -76,7 +76,7 @@ class StockData:
 				print(stock)
 
 				try:
-					print(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
+					#print(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
 					df = pd.read_pickle(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
 				except IOError:
 					df = pd.DataFrame(columns = columns)
