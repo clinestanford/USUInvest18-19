@@ -21,7 +21,7 @@ class StockData:
 			'FLR,FMC,FL,F,FTNT,FTV,FBHS,BEN,FCX,GPS,GRMN,IT,GD,GE,GIS,GM,GPC,GILD,GPN,GS,GT,GWW,HAL,HBI,HOG,HRS,HIG,HAS,HCA,HCP,HP,HSIC,HSY,HES,HPE,HLT,HFC,HOLX,HD,HON,HRL,HST,HPQ,HUM,HBAN,HII,IDXX,INFO,ITW,ILMN,IR,INTC,ICE,IBM,INCY,IP,IPG,IFF,INTU,ISRG,IVZ,IPGP,IQV,IRM,JKHY,JEC,JBHT,JEF,SJM,JNJ,JCI,JPM,JNPR,KSU,K,KEY,KEYS,KMB,KIM,KMI,KLAC,KSS,KHC,KR,LB,LLL,LH,LRCX,LEG,LEN,LLY,LNC,LIN,LKQ,LMT,L,LOW,LYB,MTB,MAC&',
 			'M,MRO,MPC,MAR,MMC,MLM,MAS,MA,MAT,MKC,MCD,MCK,MDT,MRK,MET,MTD,MGM,KORS,MCHP,MU,MSFT,MAA,MHK,TAP,MDLZ,MNST,MCO,MS,MOS,MSI,MSCI,MYL,NDAQ,NOV,NKTR,NTAP,NFLX,NWL,NFX,NEM,NWSA,NWS,NEE,NLSN,NKE,NI,NBL,JWN,NSC,NTRS,NOC,NCLH,NRG,NUE,NVDA,ORLY,OXY,OMC,OKE,ORCL,PCAR,PKG,PH,PAYX,PYPL,PNR,PBCT,PEP,PKI,PRGO,PFE,PCG,PM,PSX,PNW,PXD,PNC,RL,PPG,PPL,PFG,PG,PGR,PLD,PRU,PEG,PSA,PHM,PVH,QRVO,PWR,QCOM,DGX,RJF,RTN,O,RHT,REG,REGN,RF&',
 			'RSG,RMD,RHI,ROK,COL,ROL,ROP,ROST,RCL,CRM,SBAC,SCG,SLB,STX,SEE,SRE,SHW,SPG,SWKS,SLG,SNA,SO,LUV,SPGI,SWK,SBUX,STT,SRCL,SYK,STI,SIVB,SYMC,SYF,SNPS,SYY,TROW,TTWO,TPR,TGT,TEL,FTI,TXN,TXT,TMO,TIF,TWTR,TJX,TMK,TSS,TSCO,TDG,TRV,TRIP,FOXA,FOX,TSN,UDR,ULTA,USB,UAA,UA,UNP,UAL,UNH,UPS,URI,UTX,UHS,UNM,VFC,VLO,VAR,VTR,VRSN,VRSK,VZ,VRTX,VIAB,V,VNO,VMC,WMT,WBA,DIS,WM,WAT,WEC,WCG,WFC,WELL,WDC,WU,WRK,WY,WHR,WMB,WLTW,WYNN,XEL,XRX&',
-			'XLNX,XYL,YUM,ZBH,ZION,ZTS,QQQ&']
+			'XLNX,XYL,YUM,ZBH,ZION,ZTS,QQQ,JNUG&']
 	
 	# Returns 5year data from a batch of symbols.
 	def GetBatch(self, symbols = "SPY,APPL,F,GE,FB", window="3m"):
@@ -88,6 +88,26 @@ class StockData:
 				# df = df.set_index('date')
 				df.to_pickle(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
 
+	def DownloadSingle(self, ticker, window):
+		path = Path(cwd()) / (Path(__file__).parent)
+		columns = ['date', 'symbol', 'open', 'high', 'low', 'close', 'volume', 'change', 'changePercent', 'vwap']
+		json = self.GetBatch(ticker, window=window)
+		for stock in json: 
+			print(stock)
+			try:
+				df = pd.read_pickle(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
+			except IOError:
+				df = pd.DataFrame(columns = columns)
+
+			for day in json[stock]['chart']:
+				df = self.map_to_df(df, stock, day)
+
+			# df['date'] = pd.to_datetime(df['date'])
+			# df = df.set_index('date')
+			df.to_pickle(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
+
+
+
 
 	#Reads Saved Pickle and returns dataframe.
 	def Get(self, symbol):
@@ -102,7 +122,8 @@ def main():
 	date = StockData()
 	##if you want to download 5y of data, run
 	#date.Download(window='5y')
-	date.Download()
+	date.Download(window='5y')
+	#dat.DownloadSingle(ticker="JNUG", window='5y')
 
 if __name__ == '__main__':
 	main()

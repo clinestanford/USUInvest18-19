@@ -52,8 +52,8 @@ if __name__ == '__main__':
 
 	# AMD, 
 
-	symbol = "AMD"
-	backTestDays = 60
+	symbol = "JNUG"
+	backTestDays = 80
 	startingCash = 1500
 
 	try:
@@ -63,12 +63,16 @@ if __name__ == '__main__':
 
 	highest = [0,0,0,0]
 
-	for i in np.arange(.94, 1, .005):
-		for j in np.arange(1.06, 1, -.005):
-			for k in np.arange(5, 30, 5):
+	# for i in np.arange(.94, 1, .005):
+	# 	for j in np.arange(1.06, 1, -.005):
+	# 		for k in np.arange(5, 30, 5):
 
-				temp = testSimpleMovingAverage(security, k, j, i, backTestDays, startingCash)
-				if temp[0] > highest[0]:
-					highest = temp
+	# 			temp = testSimpleMovingAverage(security, k, j, i, backTestDays, startingCash)
+	# 			if temp[0] > highest[0]:
+	# 				highest = temp
 
-	print('percent: ', highest[0], " window: ", highest[1], " above: ", highest[2], " below: ", highest[3])
+	#testSimpleMovingAverage(security, window, percentAbove, percentBelow, backTestDays, cash):
+	testSimpleMovingAverage(security, 10, 1.01, .955, backTestDays, startingCash)
+	print(1754/1500)
+
+	# print('percent: ', highest[0], " window: ", highest[1], " above: ", highest[2], " below: ", highest[3])
