@@ -4,12 +4,17 @@
 import sys
 import requests
 import pandas as pd
+import json
 from iex_record import iex_record
 from datetime import datetime
 import os.path
 from Config import PATH_CONFIG
 from os import getcwd as cwd 
 from pathlib2 import Path
+
+##test URL
+##https://api.iextrading.com/1.0/stock/market/batch?symbols=JNUG,QQQ,ZION&types=chart&range=3m
+
 
 class StockData:
 
@@ -63,6 +68,32 @@ class StockData:
 			df = df.append(new_row)
 
 		return df
+
+	def Download2(self, window='3m'):
+
+		path = Path(cwd()) / (Path(__file__).parent)
+		columns = ['date', 'symbol', 'open', 'high', 'low', 'close', 'volume', 'change', 'changePercent', 'vwap']
+
+		json_obj = self.GetBatch("JNUG,QQQ,ZION", window=window)
+		for stock in json_obj:
+			##pandas can read from json string, need to dump it
+			df = pd.read_json(json.dumps(json_obj[stock]['chart']))
+			df.set_index('date', inplace=True)
+
+			try:
+				prev = pd.read_pickle(path / PATH_CONFIG["StockDataPath"] / (stock + '.pkl'))
+			except IOError:
+				prev = pd.DataFrame(columns = columns)
+
+			print('previous: ', len(prev.values), len(df.values))
+
+			merge = pd.concat([prev, df])
+
+			print('after: ', len(merge.values))
+
+			print('head:  ', prev.tail(1))
+			print('tail:  ', df.head(1))
+
 
 	#download the last 'window' of data for all in S&P 500
 	def Download(self, window='3m'):
@@ -122,7 +153,7 @@ def main():
 	date = StockData()
 	##if you want to download 5y of data, run
 	#date.Download(window='5y')
-	date.Download(window='5y')
+	date.Download2(window='3m')
 	#dat.DownloadSingle(ticker="JNUG", window='5y')
 
 if __name__ == '__main__':
